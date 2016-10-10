@@ -43,7 +43,9 @@ if (is_callable('exec') && false === stripos(ini_get('disable_functions'), 'exec
         echo "Sorry, couldn't unzip the downloaded file!";
         exit;
     }
-    //@unlink($tmpZipFile);
+
+    //Remove temporary zip file
+    @unlink($tmpZipFile);
 
     //Move wordpress files to root directory
     $command = 'mv -f '.$installDir.'/wordpress/* '.$installDir;
