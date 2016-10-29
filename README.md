@@ -7,3 +7,6 @@ Bored with the downloading and uploading the wordpress files when creating a new
 It will download the latest wordpress and move you to the setup page. 
 
 ####Isn't it just too easy?
+
+##Requirements:
+The installer file runs shell scripts to download / extract the wordpress files. Your server need to have the shell enabled with php `exec()` function.
