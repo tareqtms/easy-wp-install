@@ -25,47 +25,63 @@ $installDir = dirname(__FILE__);
  */
 $tmpZipFile = $installDir . "/tmpWP.zip";
 
-if (is_callable('exec') && false === stripos(ini_get('disable_functions'), 'exec')) {
-    //Download Zip File
-    $command = "curl $wpDownloadLink -o $tmpZipFile";
-    exec($command, $result, $return);
 
-    if ($return !== 0) {
-        echo "Sorry, the Download failed! Pls check if you have curl enabled!";
-        exit;
-    }
-
-    //Extract Zip File
-    $command = 'unzip '.$tmpZipFile.' -d '.$installDir;
-    exec($command, $result, $return);
-
-    if ($return !== 0) {
-        echo "Sorry, couldn't unzip the downloaded file!";
-        exit;
-    }
-
-    //Remove temporary zip file
-    @unlink($tmpZipFile);
-
-    //Move wordpress files to root directory
-    $command = 'mv -f '.$installDir.'/wordpress/* '.$installDir;
-    exec($command, $result, $return);
-
-    if ($return !== 0) {
-        echo "Sorry, couldn't move the wordpress files to the root directory!";
-        exit;
-    }
-    //Remove the directory named "wordpress"
+//check if have wordpress dir 
+if(is_dir( $installDir.'/wordpress/'))
+{
+    //remove wordpress dir
     @rmdir($installDir.'/wordpress');
+}
 
-    //Remove this file
-    @unlink(__FILE__);
-    ?>
-    <script type="text/javascript">
+
+if(!@copy($wpDownloadLink,$tmpZipFile))
+{
+    $errors= error_get_last();
+    echo "COPY ERROR: ".$errors['type'];
+    echo "<br />\n".$errors['message'];
+} else {
+    $zip = new ZipArchive;
+    if ($zip->open('tmpWP.zip') === TRUE) {
+        $zip->extractTo($installDir);
+        $zip->close();
+
+        //Remove temporary zip file
+        @unlink($tmpZipFile);
+
+
+
+        // Identify directories
+        $source = $installDir.'/wordpress/';
+        // Get array of all source files
+        $files = scandir($source);
+        
+        $destination = $installDir.'/';
+        // Cycle through all source files
+        foreach ($files as $file) {
+          if (in_array($file, array(".",".."))) continue;
+          
+          if (!rename($source.$file, $destination.$file)) {
+            die("error in rename..!");
+          }
+        }
+
+        //Remove the directory named "wordpress"
+        @rmdir($installDir.'/wordpress');
+
+        //Remove this file
+        @unlink(__FILE__);
+        ?>
+
+        <script type="text/javascript">
         //Redirect to wp setup page
         document.location.href = './wp-admin/setup-config.php';
-    </script>
-    <?php
-} else {
-    echo "Sorry! This file depends on exec() function. Pls check if that function is disabled!";
-}
+        </script>
+
+
+<?php
+
+
+    } else {
+        echo "ZipArchive ERROR..";
+    }
+}  
