@@ -54,7 +54,6 @@ if(!@copy($wpDownloadLink,$tmpZipFile))
         $source = $installDir.'/wordpress/';
         // Get array of all source files
         $files = scandir($source);
-        //var_dump($files);
         
         $destination = $installDir.'/';
         // Cycle through all source files
