@@ -10,3 +10,4 @@ It will download the latest wordpress and move you to the setup page.
 
 ## Requirements:
 PHP 5 >= 5.2.0 or PHP 7.
+PHP needs to have the zip extension installed.
